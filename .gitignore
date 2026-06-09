@@ -65,6 +65,10 @@ dmypy.json
 # Ruff / Black / isort
 .ruff_cache/
 
+# Celery
+celerybeat-schedule
+*.pid
+
 # Alembic (manter apenas migrations, não o banco temporário)
 # backend/alembic/versions/*.pyc  # removido pois pyc já está ignorado acima
 
