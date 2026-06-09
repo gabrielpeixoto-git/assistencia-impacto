@@ -1,0 +1,43 @@
+# Estágio 1: Build do frontend
+FROM node:20-alpine AS frontend_builder
+WORKDIR /app
+COPY frontend/package*.json ./
+RUN npm ci --frozen-lockfile
+COPY frontend .
+RUN npm run build
+
+# Estágio 2: Backend com frontend estático
+FROM python:3.11-slim
+WORKDIR /app
+
+# Instalar dependências do sistema
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    libffi-dev \
+    libjpeg-dev \
+    libpng-dev \
+    zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar dependências Python
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar código do aplicativo
+COPY backend/ .
+
+# Criar diretório de uploads
+RUN mkdir -p /uploads
+
+# Copiar build estático do frontend
+COPY --from=frontend_builder /app/dist /app/frontend/dist
+
+# Expor porta
+EXPOSE 8000
+
+# Comando padrão
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

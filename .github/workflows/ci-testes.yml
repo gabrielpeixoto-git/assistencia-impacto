@@ -1,0 +1,149 @@
+﻿name: CI - Testes Completos
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  backend-integration:
+    name: Backend Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: assistencia_impacto_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_senha
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar dependencias
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      - name: Rodar migracoes
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://test_user:test_senha@localhost:5432/assistencia_impacto_test
+          REDIS_URL: redis://localhost:6379/0
+          CHAVE_SECRETA: ci-test-secret-key
+          AMBIENTE: test
+        run: alembic upgrade head
+
+      - name: Executar testes
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://test_user:test_senha@localhost:5432/assistencia_impacto_test
+          REDIS_URL: redis://localhost:6379/0
+          CHAVE_SECRETA: ci-test-secret-key
+          AMBIENTE: test
+          CELERY_TASK_ALWAYS_EAGER: "true"
+        run: pytest tests/integration/ -v --cov=app --cov-report=xml:coverage.xml --cov-report=term-missing --cov-fail-under=85 --asyncio-mode=auto -n auto --tb=short
+
+      - name: Upload cobertura
+        uses: codecov/codecov-action@v4
+        with:
+          file: backend/coverage.xml
+          flags: backend
+
+      - name: Publicar relatorio de cobertura
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: backend/coverage.xml
+
+  e2e-playwright:
+    name: E2E Playwright Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: backend-integration
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construir imagens Docker
+        run: docker compose -f docker-compose.test.yml build
+
+      - name: Subir stack E2E
+        run: docker compose -f docker-compose.test.yml up -d banco_e2e redis_e2e backend_e2e nginx_e2e
+
+      - name: Aguardar stack ficar pronta
+        run: |
+          sleep 60
+          curl -sf http://localhost:9090/api/health || exit 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Instalar dependencias Playwright
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install chromium --with-deps
+
+      - name: Executar testes E2E
+        working-directory: e2e
+        env:
+          BASE_URL: http://localhost:9090
+          API_URL: http://localhost:9090/api
+          ADMIN_EMAIL: admin@assistenciaimpacto.com.br
+          ADMIN_SENHA: Admin@123
+          TECNICO_EMAIL: joao@assistenciaimpacto.com.br
+          TECNICO_SENHA: Tecnico@123
+          CI: "true"
+        run: npx playwright test --reporter=list,html
+
+      - name: Publicar relatorio Playwright
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: reports/playwright-html/
+          retention-days: 30
+
+      - name: Publicar screenshots de falhas
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-failures
+          path: e2e/test-results/
+          retention-days: 7
+
+      - name: Parar stack Docker
+        if: always()
+        run: docker compose -f docker-compose.test.yml down -v

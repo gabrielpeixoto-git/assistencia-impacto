@@ -1,0 +1,156 @@
+# ════════════════════════════════════════
+# SEGURANÇA — NUNCA COMMITAR
+# ════════════════════════════════════════
+
+# Arquivos de ambiente com secrets reais
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# Uploads de usuários (arquivos reais de clientes)
+uploads/
+/uploads/
+backend/uploads/
+*.upload
+
+# Certificados SSL
+ssl/
+*.pem
+*.key
+*.crt
+*.p12
+
+# ════════════════════════════════════════
+# PYTHON / BACKEND
+# ════════════════════════════════════════
+
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+
+# Distribuição e build
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+
+# Ambientes virtuais
+venv/
+env/
+.venv/
+.env_python/
+ENV/
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.cover
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Ruff / Black / isort
+.ruff_cache/
+
+# Alembic (manter apenas migrations, não o banco temporário)
+# backend/alembic/versions/*.pyc  # removido pois pyc já está ignorado acima
+
+# ════════════════════════════════════════
+# NODE / FRONTEND
+# ════════════════════════════════════════
+
+node_modules/
+frontend/node_modules/
+
+# Build do Vite
+frontend/dist/
+frontend/build/
+dist/
+.vite/
+
+# Cache do Vite e TypeScript
+frontend/.vite/
+*.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+
+# Logs npm/yarn/pnpm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# ════════════════════════════════════════
+# DOCKER
+# ════════════════════════════════════════
+
+# Volumes Docker (não há arquivos locais de volume aqui normalmente)
+# docker-compose.override.yml  # descomente se quiser ignorar o override local
+
+# ════════════════════════════════════════
+# BANCO DE DADOS
+# ════════════════════════════════════════
+
+*.sqlite
+*.sqlite3
+*.db
+*.sql.backup
+postgres-data/
+pgdata/
+
+# ════════════════════════════════════════
+# IDEs E EDITORES
+# ════════════════════════════════════════
+
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ════════════════════════════════════════
+# LOGS E TEMPORÁRIOS
+# ════════════════════════════════════════
+
+logs/
+*.log
+*.log.*
+tmp/
+temp/
+.tmp/
+
+# ════════════════════════════════════════
+# RELATÓRIOS E PDFS GERADOS
+# ════════════════════════════════════════
+
+*.pdf
+!docs/**/*.pdf
+generated_pdfs/
+relatorios_gerados/
+
+# ════════════════════════════════════════
+# MISC
+# ════════════════════════════════════════
+
+.cache/
+.parcel-cache/
+coverage/
+*.bak
+*.orig

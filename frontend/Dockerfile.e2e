@@ -1,0 +1,19 @@
+﻿# Estágio 1: Build do React
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --frozen-lockfile
+
+COPY . .
+# Build sem VITE_API_URL = usa proxy Nginx relativo /api
+RUN npm run build
+
+# Estágio 2: Nginx servindo o build
+FROM nginx:1.25-alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+# nginx.conf será montado via volume no docker-compose.test.yml
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

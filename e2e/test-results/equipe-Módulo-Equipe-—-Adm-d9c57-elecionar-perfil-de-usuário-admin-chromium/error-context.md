@@ -1,0 +1,400 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: equipe.spec.ts >> Módulo Equipe — Admin >> deve selecionar perfil de usuário
+- Location: specs\equipe.spec.ts:87:7
+
+# Error details
+
+```
+Test timeout of 60000ms exceeded.
+```
+
+```
+Error: page.click: Test timeout of 60000ms exceeded.
+Call log:
+  - waiting for locator('text=Gerente')
+    - locator resolved to 4 elements. Proceeding with the first one: <h3 class="font-semibold">Gerente Teste</h3>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - <div data-testid="modal-usuario" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">…</div> intercepts pointer events
+    - retrying click action
+    - waiting 20ms
+    2 × waiting for element to be visible, enabled and stable
+      - element is visible, enabled and stable
+      - scrolling into view if needed
+      - done scrolling
+      - <div data-testid="modal-usuario" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">…</div> intercepts pointer events
+    - retrying click action
+      - waiting 100ms
+    110 × waiting for element to be visible, enabled and stable
+        - element is visible, enabled and stable
+        - scrolling into view if needed
+        - done scrolling
+        - <div data-testid="modal-usuario" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">…</div> intercepts pointer events
+      - retrying click action
+        - waiting 500ms
+
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e7]:
+          - img [ref=e9]
+          - heading "Assistência Impacto" [level=1] [ref=e12]
+          - button [ref=e13] [cursor=pointer]:
+            - img [ref=e14]
+        - navigation [ref=e17]:
+          - generic [ref=e18]:
+            - paragraph [ref=e19]: VISÃO GERAL
+            - link "Dashboard" [ref=e21] [cursor=pointer]:
+              - /url: /
+              - img [ref=e22]
+              - generic [ref=e27]: Dashboard
+          - generic [ref=e28]:
+            - paragraph [ref=e29]: OPERAÇÕES
+            - generic [ref=e30]:
+              - link "Ordens de Serviço" [ref=e31] [cursor=pointer]:
+                - /url: /ordens-servico
+                - img [ref=e32]
+                - generic [ref=e35]: Ordens de Serviço
+              - link "Orçamentos" [ref=e36] [cursor=pointer]:
+                - /url: /orcamentos
+                - img [ref=e37]
+                - generic [ref=e40]: Orçamentos
+              - link "Agenda" [ref=e41] [cursor=pointer]:
+                - /url: /agenda
+                - img [ref=e42]
+                - generic [ref=e44]: Agenda
+              - link "Clientes" [ref=e45] [cursor=pointer]:
+                - /url: /clientes
+                - img [ref=e46]
+                - generic [ref=e51]: Clientes
+          - generic [ref=e52]:
+            - paragraph [ref=e53]: FINANCEIRO
+            - generic [ref=e54]:
+              - link "Visão Financeira" [ref=e55] [cursor=pointer]:
+                - /url: /financeiro
+                - img [ref=e56]
+                - generic [ref=e58]: Visão Financeira
+              - link "Transações" [ref=e59] [cursor=pointer]:
+                - /url: /transacoes
+                - img [ref=e60]
+                - generic [ref=e63]: Transações
+          - generic [ref=e64]:
+            - paragraph [ref=e65]: RECURSOS
+            - generic [ref=e66]:
+              - link "Estoque" [ref=e67] [cursor=pointer]:
+                - /url: /estoque
+                - img [ref=e68]
+                - generic [ref=e72]: Estoque
+              - link "Equipe" [ref=e73] [cursor=pointer]:
+                - /url: /equipe
+                - img [ref=e74]
+                - generic [ref=e79]: Equipe
+          - generic [ref=e80]:
+            - paragraph [ref=e81]: ANÁLISE
+            - link "Relatórios" [ref=e83] [cursor=pointer]:
+              - /url: /relatorios
+              - img [ref=e84]
+              - generic [ref=e86]: Relatórios
+          - generic [ref=e87]:
+            - paragraph [ref=e88]: SISTEMA
+            - link "Configurações" [ref=e90] [cursor=pointer]:
+              - /url: /configuracoes
+              - img [ref=e91]
+              - generic [ref=e94]: Configurações
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - generic [ref=e98]: A
+            - generic [ref=e99]:
+              - paragraph [ref=e100]: Administrador
+              - paragraph [ref=e101]: admin@assistenciaimpacto.com.br
+          - button "Sair" [ref=e102] [cursor=pointer]:
+            - img [ref=e103]
+            - generic [ref=e106]: Sair
+    - generic [ref=e107]:
+      - banner [ref=e108]:
+        - generic [ref=e110]:
+          - img [ref=e111]
+          - textbox "Buscar... (Cmd+K)" [ref=e114]
+        - generic [ref=e115]:
+          - button [ref=e117] [cursor=pointer]:
+            - img [ref=e118]
+          - button "Administrador" [ref=e123] [cursor=pointer]:
+            - img [ref=e125]
+            - generic [ref=e128]:
+              - paragraph [ref=e129]: Administrador
+              - img [ref=e130]
+      - main [ref=e132]:
+        - generic [ref=e134]:
+          - generic [ref=e135]:
+            - generic [ref=e136]:
+              - img [ref=e137]
+              - textbox "Buscar membro..." [ref=e140]
+            - button "Novo Membro" [ref=e141] [cursor=pointer]:
+              - img [ref=e142]
+              - text: Novo Membro
+          - generic [ref=e143]:
+            - generic [ref=e144]:
+              - generic [ref=e145]:
+                - generic [ref=e146]:
+                  - generic [ref=e148]: A
+                  - generic [ref=e149]:
+                    - heading "Administrador" [level=3] [ref=e150]
+                    - paragraph [ref=e151]: admin@assistenciaimpacto.com.br
+                - generic [ref=e152]: admin
+              - generic [ref=e153]:
+                - button [ref=e154] [cursor=pointer]:
+                  - img [ref=e155]
+                - button [ref=e158] [cursor=pointer]:
+                  - img [ref=e159]
+            - generic [ref=e162]:
+              - generic [ref=e163]:
+                - generic [ref=e164]:
+                  - generic [ref=e166]: JS
+                  - generic [ref=e167]:
+                    - heading "João Silva" [level=3] [ref=e168]
+                    - paragraph [ref=e169]: joao@assistenciaimpacto.com.br
+                - generic [ref=e170]: tecnico
+              - generic [ref=e171]:
+                - button [ref=e172] [cursor=pointer]:
+                  - img [ref=e173]
+                - button [ref=e176] [cursor=pointer]:
+                  - img [ref=e177]
+            - generic [ref=e180]:
+              - generic [ref=e181]:
+                - generic [ref=e182]:
+                  - generic [ref=e184]: GT
+                  - generic [ref=e185]:
+                    - heading "Gerente Teste" [level=3] [ref=e186]
+                    - paragraph [ref=e187]: gerente@assistenciaimpacto.com.br
+                - generic [ref=e188]: gerente
+              - generic [ref=e189]:
+                - button [ref=e190] [cursor=pointer]:
+                  - img [ref=e191]
+                - button [ref=e194] [cursor=pointer]:
+                  - img [ref=e195]
+          - generic [ref=e199]:
+            - heading "Novo Membro" [level=2] [ref=e200]
+            - generic [ref=e201]:
+              - generic [ref=e202]:
+                - generic [ref=e203]: Email *
+                - textbox "Email *" [ref=e204]:
+                  - /placeholder: email@exemplo.com
+              - generic [ref=e205]:
+                - generic [ref=e206]: Nome Completo *
+                - textbox "Nome Completo *" [ref=e207]:
+                  - /placeholder: Nome do membro
+              - generic [ref=e208]:
+                - generic [ref=e209]:
+                  - generic [ref=e210]: Perfil
+                  - combobox "Perfil" [active] [ref=e211]:
+                    - option "Visualizador"
+                    - option "Tecnico" [selected]
+                    - option "Gerente"
+                    - option "Administrador"
+                - generic [ref=e212]:
+                  - generic [ref=e213]: Telefone
+                  - textbox "Telefone" [ref=e214]:
+                    - /placeholder: (11) 99999-9999
+              - generic [ref=e215]:
+                - generic [ref=e216]: Senha *
+                - textbox "Senha *" [ref=e217]:
+                  - /placeholder: Minimo 8 caracteres
+              - generic [ref=e218]:
+                - generic [ref=e219]: Confirmar Senha *
+                - textbox "Confirmar Senha *" [ref=e220]:
+                  - /placeholder: Confirme a senha
+            - generic [ref=e221]:
+              - button "Cancelar" [ref=e222] [cursor=pointer]
+              - button "Salvar" [ref=e223] [cursor=pointer]:
+                - img [ref=e224]
+                - text: Salvar
+  - region "Notifications alt+T"
+```
+
+# Test source
+
+```ts
+  1   | ﻿import { test, expect } from '@playwright/test';
+  2   | import path from 'path';
+  3   | 
+  4   | test.describe('Módulo Equipe — Admin', () => {
+  5   |   test.use({ storageState: path.join(__dirname, '../.auth/admin.json') });
+  6   | 
+  7   |   test.beforeEach(async ({ page }) => {
+  8   |     await page.goto('/equipe');
+  9   |     await page.waitForSelector('[data-testid="equipe-container"]');
+  10  |   });
+  11  | 
+  12  |   test('deve exibir grade de técnicos', async ({ page }) => {
+  13  |     await expect(page.locator('[data-testid="equipe-container"]')).toBeVisible();
+  14  |   });
+  15  | 
+  16  |   test('deve exibir botão de novo usuário', async ({ page }) => {
+  17  |     await expect(page.locator('[data-testid="btn-novo-usuario"]')).toBeVisible();
+  18  |   });
+  19  | 
+  20  |   test('deve exibir campo de busca', async ({ page }) => {
+  21  |     await expect(page.locator('[data-testid="input-busca-equipe"]')).toBeVisible();
+  22  |   });
+  23  | 
+  24  |   test('deve abrir modal ao clicar em Novo Usuário', async ({ page }) => {
+  25  |     await page.click('[data-testid="btn-novo-usuario"]');
+  26  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  27  |     await expect(page.locator('[data-testid="modal-titulo"]')).toHaveText('Novo Membro');
+  28  |   });
+  29  | 
+  30  |   test('deve preencher e salvar novo usuário', async ({ page }) => {
+  31  |     await page.click('[data-testid="btn-novo-usuario"]');
+  32  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  33  | 
+  34  |     // Preencher formulário
+  35  |     await page.fill('[data-testid="input-email-usuario"]', 'novo.usuario@teste.com');
+  36  |     await page.fill('[data-testid="input-nome-usuario"]', 'Usuário Teste E2E');
+  37  |     await page.fill('[data-testid="input-telefone-usuario"]', '11999999999');
+  38  |     await page.fill('[data-testid="input-senha-usuario"]', 'Senha123!');
+  39  |     await page.fill('[data-testid="input-confirmar-senha-usuario"]', 'Senha123!');
+  40  | 
+  41  |     // Salvar
+  42  |     await page.click('[data-testid="btn-salvar-usuario"]');
+  43  |     
+  44  |     // Modal deve fechar
+  45  |     await expect(page.locator('[data-testid="modal-usuario"]')).not.toBeVisible();
+  46  |     await page.waitForTimeout(1000);
+  47  |   });
+  48  | 
+  49  |   test('deve cancelar criação de usuário', async ({ page }) => {
+  50  |     await page.click('[data-testid="btn-novo-usuario"]');
+  51  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  52  | 
+  53  |     await page.click('[data-testid="btn-cancelar-modal"]');
+  54  |     await expect(page.locator('[data-testid="modal-usuario"]')).not.toBeVisible();
+  55  |   });
+  56  | 
+  57  |   test('deve validar campos obrigatórios ao criar usuário', async ({ page }) => {
+  58  |     await page.click('[data-testid="btn-novo-usuario"]');
+  59  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  60  | 
+  61  |     // Tentar salvar sem preencher campos
+  62  |     await page.click('[data-testid="btn-salvar-usuario"]');
+  63  |     
+  64  |     // Modal deve permanecer aberto (validação impediu salvamento)
+  65  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  66  |     
+  67  |     await page.click('[data-testid="btn-cancelar-modal"]');
+  68  |   });
+  69  | 
+  70  |   test('deve validar confirmação de senha', async ({ page }) => {
+  71  |     await page.click('[data-testid="btn-novo-usuario"]');
+  72  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  73  | 
+  74  |     await page.fill('[data-testid="input-email-usuario"]', 'teste.senha@teste.com');
+  75  |     await page.fill('[data-testid="input-nome-usuario"]', 'Teste Senha');
+  76  |     await page.fill('[data-testid="input-senha-usuario"]', 'Senha123!');
+  77  |     await page.fill('[data-testid="input-confirmar-senha-usuario"]', 'SenhaDiferente!');
+  78  | 
+  79  |     await page.click('[data-testid="btn-salvar-usuario"]');
+  80  |     
+  81  |     // Modal deve permanecer aberto (senhas não conferem)
+  82  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  83  |     
+  84  |     await page.click('[data-testid="btn-cancelar-modal"]');
+  85  |   });
+  86  | 
+  87  |   test('deve selecionar perfil de usuário', async ({ page }) => {
+  88  |     await page.click('[data-testid="btn-novo-usuario"]');
+  89  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  90  | 
+  91  |     await page.click('[data-testid="select-perfil-usuario"]');
+> 92  |     await page.click('text=Gerente');
+      |                ^ Error: page.click: Test timeout of 60000ms exceeded.
+  93  |     
+  94  |     const valorSelecionado = await page.locator('[data-testid="select-perfil-usuario"]').inputValue();
+  95  |     expect(valorSelecionado).toBe('gerente');
+  96  |     
+  97  |     await page.click('[data-testid="btn-cancelar-modal"]');
+  98  |   });
+  99  | 
+  100 |   test('deve buscar usuário por nome', async ({ page }) => {
+  101 |     await page.fill('[data-testid="input-busca-equipe"]', 'admin');
+  102 |     await page.waitForTimeout(500);
+  103 |     
+  104 |     const valorBusca = await page.locator('[data-testid="input-busca-equipe"]').inputValue();
+  105 |     expect(valorBusca).toBe('admin');
+  106 |   });
+  107 | 
+  108 |   test('deve editar usuário existente', async ({ page }) => {
+  109 |     // Verificar se há usuários para editar
+  110 |     const cards = await page.locator('[data-testid^="card-tecnico-"]').count();
+  111 |     
+  112 |     if (cards > 0) {
+  113 |       const primeiroCard = page.locator('[data-testid^="card-tecnico-"]').first();
+  114 |       const cardId = await primeiroCard.getAttribute('data-testid');
+  115 |       const id = cardId?.replace('card-tecnico-', '');
+  116 |       
+  117 |       if (id) {
+  118 |         await page.click(`[data-testid="btn-editar-${id}"]`);
+  119 |         await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  120 |         await expect(page.locator('[data-testid="modal-titulo"]')).toHaveText('Editar Membro');
+  121 | 
+  122 |         // Modificar nome
+  123 |         await page.fill('[data-testid="input-nome-usuario"]', 'Usuário Editado E2E');
+  124 |         await page.click('[data-testid="btn-salvar-usuario"]');
+  125 |         
+  126 |         await expect(page.locator('[data-testid="modal-usuario"]')).not.toBeVisible();
+  127 |       }
+  128 |     } else {
+  129 |       test.skip(true, 'Nenhum usuário encontrado para editar');
+  130 |     }
+  131 |   });
+  132 | 
+  133 |   test('deve exibir cards de técnicos com informações', async ({ page }) => {
+  134 |     const cards = await page.locator('[data-testid^="card-tecnico-"]').count();
+  135 |     
+  136 |     if (cards > 0) {
+  137 |       const primeiroCard = page.locator('[data-testid^="card-tecnico-"]').first();
+  138 |       await expect(primeiroCard).toBeVisible();
+  139 |       // Verificar que o card tem conteúdo (nome, email, perfil)
+  140 |     } else {
+  141 |       test.skip(true, 'Nenhum usuário encontrado');
+  142 |     }
+  143 |   });
+  144 | });
+  145 | 
+  146 | test.describe('Módulo Equipe — Técnico (acesso restrito)', () => {
+  147 |   test.use({ storageState: path.join(__dirname, '../.auth/tecnico.json') });
+  148 | 
+  149 |   test('técnico não deve ver menu Financeiro na sidebar', async ({ page }) => {
+  150 |     await page.goto('/dashboard');
+  151 |     await expect(page.locator('[data-testid="nav-financeiro"]')).not.toBeVisible();
+  152 |   });
+  153 | 
+  154 |   test('técnico deve ver menu Ordens de Serviço', async ({ page }) => {
+  155 |     await page.goto('/dashboard');
+  156 |     await expect(page.locator('[data-testid="nav-ordens-servico"]')).toBeVisible();
+  157 |   });
+  158 | 
+  159 |   test('técnico não deve acessar página de equipe', async ({ page }) => {
+  160 |     await page.goto('/equipe');
+  161 |     // Deve ser redirecionado ou mostrar erro de permissão
+  162 |     await page.waitForTimeout(1000);
+  163 |     // Verificar se está na página de equipe ou foi redirecionado
+  164 |   });
+  165 | });
+  166 | 
+```

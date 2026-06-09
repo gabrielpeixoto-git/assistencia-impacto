@@ -1,0 +1,123 @@
+﻿version: '3.9'
+
+services:
+  banco_teste:
+    image: postgres:15-alpine
+    container_name: assistencia_impacto_test_db
+    environment:
+      POSTGRES_DB: test_assistencia_impacto
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis_teste:
+    image: redis:7-alpine
+    container_name: assistencia_impacto_test_redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend_teste:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.test
+    container_name: assistencia_impacto_test_backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+      - ./uploads:/uploads
+    ports:
+      - "8001:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@banco_teste:5432/test_assistencia_impacto
+      - REDIS_URL=redis://redis_teste:6379/1
+      - CHAVE_SECRETA=test-secret-key-256-bits-for-testing-only
+      - ALGORITMO=HS256
+      - EXPIRACAO_TOKEN_ACESSO_MINUTOS=15
+      - EXPIRACAO_REFRESH_TOKEN_DIAS=7
+      - ORIGENS_CORS=http://localhost:5174,http://localhost:5175
+      - HOSTS_PERMITIDOS=localhost,127.0.0.1
+      - DIRETORIO_UPLOADS=/uploads
+      - TAMANHO_MAXIMO_UPLOAD_MB=10
+      - TIPOS_IMAGEM_PERMITIDOS=image/jpeg,image/png,image/webp
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORTA=587
+      - SMTP_USUARIO=test@gmail.com
+      - SMTP_SENHA=test-app-password
+      - EMAIL_REMETENTE=noreply@assistenciaimpacto.com.br
+      - NOME_REMETENTE=Assistência Impacto
+      - EVOLUTION_API_URL=http://evolution-api:8080
+      - EVOLUTION_API_KEY=test-api-key
+      - WHATSAPP_TELEFONE=5511999999999
+      - GOOGLE_MAPS_API_KEY=test-google-maps-key
+      - VIACEP_API_URL=https://viacep.com.br/ws
+      - NOME_EMPRESA=Assistência Impacto Test
+      - CNPJ_EMPRESA=00.000.000/0001-00
+      - TELEFONE_EMPRESA=(11) 99999-9999
+      - EMAIL_EMPRESA=contato@assistenciaimpacto.com.br
+      - ENDERECO_EMPRESA=Rua das Flores, 123 - São Paulo, SP
+      - URL_FRONTEND=http://localhost:5174
+      - AMBIENTE=test
+      - PERMITIR_REGISTRO_PUBLICO=true
+      - TESTING=true
+    depends_on:
+      banco_teste:
+        condition: service_healthy
+      redis_teste:
+        condition: service_healthy
+
+  frontend_teste:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.test
+    container_name: assistencia_impacto_test_frontend
+    command: npm run dev -- --host --port 5174
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5174:5174"
+    environment:
+      - VITE_API_URL=http://backend_teste:8000
+    depends_on:
+      - backend_teste
+
+  playwright_e2e:
+    image: mcr.microsoft.com/playwright:v1.44.0-jammy
+    container_name: ai_playwright_e2e
+    working_dir: /e2e
+    command: >
+      sh -c "echo 'Aguardando backend e frontend de teste...' && 
+      until curl -sf http://backend_teste:8000/api/health; do sleep 2; done && 
+      until curl -sf http://frontend_teste:5174; do sleep 2; done && 
+      echo 'Stack de teste pronta! Rodando testes E2E...' && 
+      npx playwright install chromium && 
+      npx playwright test --reporter=list --output=/reports/playwright-results && 
+      echo 'Testes E2E concluídos!'"
+    environment:
+      BASE_URL: http://frontend_teste:5174
+      API_URL: http://backend_teste:8000/api
+      ADMIN_EMAIL: admin@assistenciaimpacto.com.br
+      ADMIN_SENHA: Admin@123
+      TECNICO_EMAIL: joao@assistenciaimpacto.com.br
+      TECNICO_SENHA: Tecnico@123
+      GERENTE_EMAIL: gerente@assistenciaimpacto.com.br
+      GERENTE_SENHA: Gerente@123
+      CI: "true"
+    volumes:
+      - ./e2e:/e2e
+      - ./reports:/reports
+    depends_on:
+      - backend_teste
+      - frontend_teste

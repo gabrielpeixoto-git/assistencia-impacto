@@ -1,0 +1,22 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:5174",
+      "localStorage": [
+        {
+          "name": "refresh_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjMzgwYTdlNC0yNDFjLTRmNjMtYTAxOC00ZGZmNGNmZWY5NmMiLCJlbWFpbCI6ImpvYW9AYXNzaXN0ZW5jaWFpbXBhY3RvLmNvbS5iciIsInBlcmZpbCI6InRlY25pY28iLCJub21lIjoiSm9cdTAwZTNvIFNpbHZhIiwiZXhwIjoxNzgxMTY0Mzc3LCJpYXQiOjE3ODA1NTk1NzcsInR5cGUiOiJyZWZyZXNoIn0.HwFsMBg42iXYg29Ww2DB3hRb9nPSxRsdjjbnJupOK2k"
+        },
+        {
+          "name": "auth-storage",
+          "value": "{\"state\":{\"usuario\":{\"id\":\"c380a7e4-241c-4f63-a018-4dff4cfef96c\",\"email\":\"joao@assistenciaimpacto.com.br\",\"nome_completo\":\"João Silva\",\"perfil\":\"tecnico\"},\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjMzgwYTdlNC0yNDFjLTRmNjMtYTAxOC00ZGZmNGNmZWY5NmMiLCJlbWFpbCI6ImpvYW9AYXNzaXN0ZW5jaWFpbXBhY3RvLmNvbS5iciIsInBlcmZpbCI6InRlY25pY28iLCJub21lIjoiSm9cdTAwZTNvIFNpbHZhIiwiZXhwIjoxNzgwNTYwNDc3LCJpYXQiOjE3ODA1NTk1NzcsInR5cGUiOiJhY2Nlc3MifQ.yTXP99HjSqfnxX_PjTOA8RwaGEYvob7bbW1kpsrbA9M\",\"isAuthenticated\":true},\"version\":0}"
+        },
+        {
+          "name": "access_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjMzgwYTdlNC0yNDFjLTRmNjMtYTAxOC00ZGZmNGNmZWY5NmMiLCJlbWFpbCI6ImpvYW9AYXNzaXN0ZW5jaWFpbXBhY3RvLmNvbS5iciIsInBlcmZpbCI6InRlY25pY28iLCJub21lIjoiSm9cdTAwZTNvIFNpbHZhIiwiZXhwIjoxNzgwNTYwNDc3LCJpYXQiOjE3ODA1NTk1NzcsInR5cGUiOiJhY2Nlc3MifQ.yTXP99HjSqfnxX_PjTOA8RwaGEYvob7bbW1kpsrbA9M"
+        }
+      ]
+    }
+  ]
+}

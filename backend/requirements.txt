@@ -1,0 +1,64 @@
+# FastAPI e servidor
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Banco de dados
+sqlalchemy==2.0.25
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+aiosqlite==0.19.0
+alembic==1.13.1
+
+# Redis
+redis==5.0.1
+hiredis==2.2.3
+
+# Celery
+celery==5.3.6
+
+# Validação e configuração
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+email-validator==2.1.0
+
+# Autenticação
+python-jose[cryptography]==3.3.0
+passlib[argon2]==1.7.4
+argon2-cffi==23.1.0
+python-multipart==0.0.6
+
+# Geração de PDF
+reportlab==4.1.0
+weasyprint==60.2
+
+# Processamento de imagens
+pillow
+
+# Cliente HTTP assíncrono
+httpx==0.26.0
+
+# WebSocket
+websockets==12.0
+
+# Logs
+loguru==0.7.2
+
+# Geocodificação
+geopy==2.4.1
+
+# Email
+aiosmtplib==3.0.1
+
+# Utilitários
+python-dateutil==2.8.2
+
+# Testes
+pytest==7.4.4
+pytest-asyncio==0.23.3
+pytest-cov==4.1.0
+httpx==0.26.0
+
+# Rate Limiting
+slowapi==0.1.9

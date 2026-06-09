@@ -1,0 +1,180 @@
+version: '3.8'
+
+services:
+  banco:
+    image: postgres:15-alpine
+    container_name: assistencia_impacto_db_prod
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - dados_postgres:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: assistencia_impacto_redis_prod
+    command: redis-server --appendonly yes
+    volumes:
+      - dados_redis:/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assistencia_impacto_backend_prod
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+    volumes:
+      - ./uploads:/uploads
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@banco:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379/0
+      - CHAVE_SECRETA=${CHAVE_SECRETA}
+      - ALGORITMO=${ALGORITMO}
+      - EXPIRACAO_TOKEN_ACESSO_MINUTOS=${EXPIRACAO_TOKEN_ACESSO_MINUTOS}
+      - EXPIRACAO_REFRESH_TOKEN_DIAS=${EXPIRACAO_REFRESH_TOKEN_DIAS}
+      - ORIGENS_CORS=${ORIGENS_CORS}
+      - HOSTS_PERMITIDOS=${HOSTS_PERMITIDOS}
+      - DIRETORIO_UPLOADS=${DIRETORIO_UPLOADS}
+      - TAMANHO_MAXIMO_UPLOAD_MB=${TAMANHO_MAXIMO_UPLOAD_MB}
+      - TIPOS_IMAGEM_PERMITIDOS=${TIPOS_IMAGEM_PERMITIDOS}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORTA=${SMTP_PORTA}
+      - SMTP_USUARIO=${SMTP_USUARIO}
+      - SMTP_SENHA=${SMTP_SENHA}
+      - EMAIL_REMETENTE=${EMAIL_REMETENTE}
+      - NOME_REMETENTE=${NOME_REMETENTE}
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
+      - WHATSAPP_TELEFONE=${WHATSAPP_TELEFONE}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - VIACEP_API_URL=${VIACEP_API_URL}
+      - NOME_EMPRESA=${NOME_EMPRESA}
+      - CNPJ_EMPRESA=${CNPJ_EMPRESA}
+      - TELEFONE_EMPRESA=${TELEFONE_EMPRESA}
+      - EMAIL_EMPRESA=${EMAIL_EMPRESA}
+      - ENDERECO_EMPRESA=${ENDERECO_EMPRESA}
+      - URL_FRONTEND=${URL_FRONTEND}
+    depends_on:
+      banco:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assistencia_impacto_worker_prod
+    command: celery -A app.tasks.celery_app worker --loglevel=info --concurrency=2
+    volumes:
+      - ./uploads:/uploads
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@banco:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379/0
+      - CHAVE_SECRETA=${CHAVE_SECRETA}
+      - ALGORITMO=${ALGORITMO}
+      - EXPIRACAO_TOKEN_ACESSO_MINUTOS=${EXPIRACAO_TOKEN_ACESSO_MINUTOS}
+      - EXPIRACAO_REFRESH_TOKEN_DIAS=${EXPIRACAO_REFRESH_TOKEN_DIAS}
+      - ORIGENS_CORS=${ORIGENS_CORS}
+      - HOSTS_PERMITIDOS=${HOSTS_PERMITIDOS}
+      - DIRETORIO_UPLOADS=${DIRETORIO_UPLOADS}
+      - TAMANHO_MAXIMO_UPLOAD_MB=${TAMANHO_MAXIMO_UPLOAD_MB}
+      - TIPOS_IMAGEM_PERMITIDOS=${TIPOS_IMAGEM_PERMITIDOS}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORTA=${SMTP_PORTA}
+      - SMTP_USUARIO=${SMTP_USUARIO}
+      - SMTP_SENHA=${SMTP_SENHA}
+      - EMAIL_REMETENTE=${EMAIL_REMETENTE}
+      - NOME_REMETENTE=${NOME_REMETENTE}
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
+      - WHATSAPP_TELEFONE=${WHATSAPP_TELEFONE}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - VIACEP_API_URL=${VIACEP_API_URL}
+      - NOME_EMPRESA=${NOME_EMPRESA}
+      - CNPJ_EMPRESA=${CNPJ_EMPRESA}
+      - TELEFONE_EMPRESA=${TELEFONE_EMPRESA}
+      - EMAIL_EMPRESA=${EMAIL_EMPRESA}
+      - ENDERECO_EMPRESA=${ENDERECO_EMPRESA}
+      - URL_FRONTEND=${URL_FRONTEND}
+    depends_on:
+      banco:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+
+  beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assistencia_impacto_beat_prod
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@banco:5432/${POSTGRES_DB}
+      - REDIS_URL=redis://redis:6379/0
+      - CHAVE_SECRETA=${CHAVE_SECRETA}
+      - ALGORITMO=${ALGORITMO}
+      - EXPIRACAO_TOKEN_ACESSO_MINUTOS=${EXPIRACAO_TOKEN_ACESSO_MINUTOS}
+      - EXPIRACAO_REFRESH_TOKEN_DIAS=${EXPIRACAO_REFRESH_TOKEN_DIAS}
+      - ORIGENS_CORS=${ORIGENS_CORS}
+      - HOSTS_PERMITIDOS=${HOSTS_PERMITIDOS}
+      - DIRETORIO_UPLOADS=${DIRETORIO_UPLOADS}
+      - TAMANHO_MAXIMO_UPLOAD_MB=${TAMANHO_MAXIMO_UPLOAD_MB}
+      - TIPOS_IMAGEM_PERMITIDOS=${TIPOS_IMAGEM_PERMITIDOS}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORTA=${SMTP_PORTA}
+      - SMTP_USUARIO=${SMTP_USUARIO}
+      - SMTP_SENHA=${SMTP_SENHA}
+      - EMAIL_REMETENTE=${EMAIL_REMETENTE}
+      - NOME_REMETENTE=${NOME_REMETENTE}
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
+      - WHATSAPP_TELEFONE=${WHATSAPP_TELEFONE}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - VIACEP_API_URL=${VIACEP_API_URL}
+      - NOME_EMPRESA=${NOME_EMPRESA}
+      - CNPJ_EMPRESA=${CNPJ_EMPRESA}
+      - TELEFONE_EMPRESA=${TELEFONE_EMPRESA}
+      - EMAIL_EMPRESA=${EMAIL_EMPRESA}
+      - ENDERECO_EMPRESA=${ENDERECO_EMPRESA}
+      - URL_FRONTEND=${URL_FRONTEND}
+    depends_on:
+      banco:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: assistencia_impacto_nginx_prod
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./uploads:/uploads:ro
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  dados_postgres:
+  dados_redis:

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assistência Impacto - Sistema de Gestão</title>
+    <script>
+      (function() {
+        // Carregar preferências de aparência antes do primeiro render
+        const tema = localStorage.getItem('tema-aparencia')
+        const cor = localStorage.getItem('cor-destaque')
+        const densidade = localStorage.getItem('densidade-interface')
+
+        // Aplicar tema (dark/light)
+        if (tema === 'light') {
+          document.documentElement.classList.add('light')
+          document.documentElement.classList.remove('dark')
+        } else if (tema === 'dark') {
+          document.documentElement.classList.add('dark')
+          document.documentElement.classList.remove('light')
+        }
+
+        // Aplicar cor de destaque
+        if (cor) {
+          document.documentElement.style.setProperty('--primary', cor)
+        }
+
+        // Aplicar densidade
+        if (densidade) {
+          document.documentElement.classList.remove('density-compact', 'density-normal', 'density-spacious')
+          document.documentElement.classList.add(`density-${densidade}`)
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,198 @@
+services:
+  banco:
+    image: postgres:15-alpine
+    container_name: assistencia_impacto_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-assistencia_impacto}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - dados_postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: assistencia_impacto_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - dados_redis:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assistencia_impacto_backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+      - ./uploads:/uploads
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@banco:5432/${POSTGRES_DB:-assistencia_impacto}
+      - REDIS_URL=redis://redis:6379/0
+      - CHAVE_SECRETA=${CHAVE_SECRETA:-sua-chave-secreta-de-256-bits-aqui}
+      - ALGORITMO=${ALGORITMO:-HS256}
+      - EXPIRACAO_TOKEN_ACESSO_MINUTOS=${EXPIRACAO_TOKEN_ACESSO_MINUTOS:-15}
+      - EXPIRACAO_REFRESH_TOKEN_DIAS=${EXPIRACAO_REFRESH_TOKEN_DIAS:-7}
+      - ORIGENS_CORS=${ORIGENS_CORS:-http://localhost:5173,http://localhost:3000}
+      - HOSTS_PERMITIDOS=${HOSTS_PERMITIDOS:-localhost,127.0.0.1}
+      - DIRETORIO_UPLOADS=${DIRETORIO_UPLOADS:-/uploads}
+      - TAMANHO_MAXIMO_UPLOAD_MB=${TAMANHO_MAXIMO_UPLOAD_MB:-10}
+      - TIPOS_IMAGEM_PERMITIDOS=${TIPOS_IMAGEM_PERMITIDOS:-image/jpeg,image/png,image/webp}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORTA=${SMTP_PORTA:-587}
+      - SMTP_USUARIO=${SMTP_USUARIO:-email@gmail.com}
+      - SMTP_SENHA=${SMTP_SENHA:-senha-de-app}
+      - EMAIL_REMETENTE=${EMAIL_REMETENTE:-noreply@assistenciaimpacto.com.br}
+      - NOME_REMETENTE=${NOME_REMETENTE:-Assistência Impacto}
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL:-http://evolution-api:8080}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-sua-chave-api}
+      - WHATSAPP_TELEFONE=${WHATSAPP_TELEFONE:-5511999999999}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-sua-chave-google-maps}
+      - VIACEP_API_URL=${VIACEP_API_URL:-https://viacep.com.br/ws}
+      - NOME_EMPRESA=${NOME_EMPRESA:-Assistência Impacto}
+      - CNPJ_EMPRESA=${CNPJ_EMPRESA:-00.000.000/0001-00}
+      - TELEFONE_EMPRESA=${TELEFONE_EMPRESA:-(11) 99999-9999}
+      - EMAIL_EMPRESA=${EMAIL_EMPRESA:-contato@assistenciaimpacto.com.br}
+      - ENDERECO_EMPRESA=${ENDERECO_EMPRESA:-Rua das Flores, 123 - São Paulo, SP}
+      - URL_FRONTEND=${URL_FRONTEND:-http://localhost:5173}
+      - TESTING=${TESTING:-true}
+    depends_on:
+      banco:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assistencia_impacto_worker
+    command: celery -A app.tasks.celery_app worker --loglevel=info
+    volumes:
+      - ./backend:/app
+      - ./uploads:/uploads
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@banco:5432/${POSTGRES_DB:-assistencia_impacto}
+      - REDIS_URL=redis://redis:6379/0
+      - CHAVE_SECRETA=${CHAVE_SECRETA:-sua-chave-secreta-de-256-bits-aqui}
+      - ALGORITMO=${ALGORITMO:-HS256}
+      - EXPIRACAO_TOKEN_ACESSO_MINUTOS=${EXPIRACAO_TOKEN_ACESSO_MINUTOS:-15}
+      - EXPIRACAO_REFRESH_TOKEN_DIAS=${EXPIRACAO_REFRESH_TOKEN_DIAS:-7}
+      - ORIGENS_CORS=${ORIGENS_CORS:-http://localhost:5173,http://localhost:3000}
+      - HOSTS_PERMITIDOS=${HOSTS_PERMITIDOS:-localhost,127.0.0.1}
+      - DIRETORIO_UPLOADS=${DIRETORIO_UPLOADS:-/uploads}
+      - TAMANHO_MAXIMO_UPLOAD_MB=${TAMANHO_MAXIMO_UPLOAD_MB:-10}
+      - TIPOS_IMAGEM_PERMITIDOS=${TIPOS_IMAGEM_PERMITIDOS:-image/jpeg,image/png,image/webp}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORTA=${SMTP_PORTA:-587}
+      - SMTP_USUARIO=${SMTP_USUARIO:-email@gmail.com}
+      - SMTP_SENHA=${SMTP_SENHA:-senha-de-app}
+      - EMAIL_REMETENTE=${EMAIL_REMETENTE:-noreply@assistenciaimpacto.com.br}
+      - NOME_REMETENTE=${NOME_REMETENTE:-Assistência Impacto}
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL:-http://evolution-api:8080}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-sua-chave-api}
+      - WHATSAPP_TELEFONE=${WHATSAPP_TELEFONE:-5511999999999}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-sua-chave-google-maps}
+      - VIACEP_API_URL=${VIACEP_API_URL:-https://viacep.com.br/ws}
+      - NOME_EMPRESA=${NOME_EMPRESA:-Assistência Impacto}
+      - CNPJ_EMPRESA=${CNPJ_EMPRESA:-00.000.000/0001-00}
+      - TELEFONE_EMPRESA=${TELEFONE_EMPRESA:-(11) 99999-9999}
+      - EMAIL_EMPRESA=${EMAIL_EMPRESA:-contato@assistenciaimpacto.com.br}
+      - ENDERECO_EMPRESA=${ENDERECO_EMPRESA:-Rua das Flores, 123 - São Paulo, SP}
+      - URL_FRONTEND=${URL_FRONTEND:-http://localhost:5173}
+    depends_on:
+      banco:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: assistencia_impacto_beat
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@banco:5432/${POSTGRES_DB:-assistencia_impacto}
+      - REDIS_URL=redis://redis:6379/0
+      - CHAVE_SECRETA=${CHAVE_SECRETA:-sua-chave-secreta-de-256-bits-aqui}
+      - ALGORITMO=${ALGORITMO:-HS256}
+      - EXPIRACAO_TOKEN_ACESSO_MINUTOS=${EXPIRACAO_TOKEN_ACESSO_MINUTOS:-15}
+      - EXPIRACAO_REFRESH_TOKEN_DIAS=${EXPIRACAO_REFRESH_TOKEN_DIAS:-7}
+      - ORIGENS_CORS=${ORIGENS_CORS:-http://localhost:5173,http://localhost:3000}
+      - HOSTS_PERMITIDOS=${HOSTS_PERMITIDOS:-localhost,127.0.0.1}
+      - DIRETORIO_UPLOADS=${DIRETORIO_UPLOADS:-/uploads}
+      - TAMANHO_MAXIMO_UPLOAD_MB=${TAMANHO_MAXIMO_UPLOAD_MB:-10}
+      - TIPOS_IMAGEM_PERMITIDOS=${TIPOS_IMAGEM_PERMITIDOS:-image/jpeg,image/png,image/webp}
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORTA=${SMTP_PORTA:-587}
+      - SMTP_USUARIO=${SMTP_USUARIO:-email@gmail.com}
+      - SMTP_SENHA=${SMTP_SENHA:-senha-de-app}
+      - EMAIL_REMETENTE=${EMAIL_REMETENTE:-noreply@assistenciaimpacto.com.br}
+      - NOME_REMETENTE=${NOME_REMETENTE:-Assistência Impacto}
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL:-http://evolution-api:8080}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-sua-chave-api}
+      - WHATSAPP_TELEFONE=${WHATSAPP_TELEFONE:-5511999999999}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-sua-chave-google-maps}
+      - VIACEP_API_URL=${VIACEP_API_URL:-https://viacep.com.br/ws}
+      - NOME_EMPRESA=${NOME_EMPRESA:-Assistência Impacto}
+      - CNPJ_EMPRESA=${CNPJ_EMPRESA:-00.000.000/0001-00}
+      - TELEFONE_EMPRESA=${TELEFONE_EMPRESA:-(11) 99999-9999}
+      - EMAIL_EMPRESA=${EMAIL_EMPRESA:-contato@assistenciaimpacto.com.br}
+      - ENDERECO_EMPRESA=${ENDERECO_EMPRESA:-Rua das Flores, 123 - São Paulo, SP}
+      - URL_FRONTEND=${URL_FRONTEND:-http://localhost:5173}
+    depends_on:
+      banco:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: assistencia_impacto_frontend
+    command: npm run dev -- --host
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=/api
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: assistencia_impacto_nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./uploads:/uploads:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  dados_postgres:
+  dados_redis:

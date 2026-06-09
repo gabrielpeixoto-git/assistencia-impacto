@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6C63FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00D4FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6C63FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Raio (impacto) -->
+  <path d="M100 20 L120 80 L180 100 L120 120 L100 180 L80 120 L20 100 L80 80 Z" fill="url(#grad1)" />
+  <!-- Chave inglesa -->
+  <path d="M85 85 L115 85 L115 95 L105 95 L105 105 L95 105 L95 95 L85 95 Z" fill="#0A0B0F" />
+  <circle cx="100" cy="90" r="8" fill="#0A0B0F" />
+</svg>

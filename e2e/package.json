@@ -1,0 +1,30 @@
+{
+  "name": "assistencia-impacto-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:smoke": "playwright test specs/ --grep \"smoke\" --reporter=list",
+    "test:auth": "playwright test specs/ --grep \"auth\"",
+    "test:clientes": "playwright test specs/clientes.spec.ts",
+    "test:os": "playwright test specs/ --grep \"ordens\"",
+    "test:orcamentos": "playwright test specs/ --grep \"orcamento\"",
+    "test:agenda": "playwright test specs/agenda.spec.ts",
+    "test:financeiro": "playwright test specs/financeiro.spec.ts",
+    "test:estoque": "playwright test specs/ --grep \"estoque\"",
+    "test:portal": "playwright test specs/portal.spec.ts",
+    "test:visual": "playwright test visual/",
+    "test:ci": "playwright test --reporter=github,html",
+    "report": "playwright show-report playwright-report",
+    "codegen": "playwright codegen http://localhost:5173"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@faker-js/faker": "^8.4.1",
+    "@types/node": "^20.11.5",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.4.5"
+  }
+}

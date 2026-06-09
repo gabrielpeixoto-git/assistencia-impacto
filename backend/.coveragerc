@@ -1,0 +1,7 @@
+[run]
+omit =
+    app/tasks/*
+    app/websocket/*
+    app/database.py
+    app/main.py
+    app/dependencies.py

@@ -1,0 +1,214 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: equipe.spec.ts >> Módulo Equipe — Admin >> deve preencher e salvar novo usuário
+- Location: specs\equipe.spec.ts:30:7
+
+# Error details
+
+```
+Error: expect(locator).not.toBeVisible() failed
+
+Locator:  locator('[data-testid="modal-usuario"]')
+Expected: not visible
+Received: visible
+Timeout:  5000ms
+
+Call log:
+  - Expect "not toBeVisible" with timeout 5000ms
+  - waiting for locator('[data-testid="modal-usuario"]')
+    14 × locator resolved to <div data-testid="modal-usuario" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">…</div>
+       - unexpected value "visible"
+
+```
+
+```yaml
+- heading "Novo Membro" [level=2]
+- text: Email *
+- textbox "Email *":
+  - /placeholder: email@exemplo.com
+  - text: novo.usuario@teste.com
+- text: Nome Completo *
+- textbox "Nome Completo *":
+  - /placeholder: Nome do membro
+  - text: Usuário Teste E2E
+- text: Perfil
+- combobox "Perfil":
+  - option "Visualizador"
+  - option "Tecnico" [selected]
+  - option "Gerente"
+  - option "Administrador"
+- text: Telefone
+- textbox "Telefone":
+  - /placeholder: (11) 99999-9999
+  - text: "11999999999"
+- text: Senha *
+- textbox "Senha *":
+  - /placeholder: Minimo 8 caracteres
+  - text: Senha123!
+- text: Confirmar Senha *
+- textbox "Confirmar Senha *":
+  - /placeholder: Confirme a senha
+  - text: Senha123!
+- text: Not Found
+- button "Cancelar"
+- button "Salvar":
+  - img
+  - text: Salvar
+```
+
+# Test source
+
+```ts
+  1   | ﻿import { test, expect } from '@playwright/test';
+  2   | import path from 'path';
+  3   | 
+  4   | test.describe('Módulo Equipe — Admin', () => {
+  5   |   test.use({ storageState: path.join(__dirname, '../.auth/admin.json') });
+  6   | 
+  7   |   test.beforeEach(async ({ page }) => {
+  8   |     await page.goto('/equipe');
+  9   |     await page.waitForSelector('[data-testid="equipe-container"]');
+  10  |   });
+  11  | 
+  12  |   test('deve exibir grade de técnicos', async ({ page }) => {
+  13  |     await expect(page.locator('[data-testid="equipe-container"]')).toBeVisible();
+  14  |   });
+  15  | 
+  16  |   test('deve exibir botão de novo usuário', async ({ page }) => {
+  17  |     await expect(page.locator('[data-testid="btn-novo-usuario"]')).toBeVisible();
+  18  |   });
+  19  | 
+  20  |   test('deve exibir campo de busca', async ({ page }) => {
+  21  |     await expect(page.locator('[data-testid="input-busca-equipe"]')).toBeVisible();
+  22  |   });
+  23  | 
+  24  |   test('deve abrir modal ao clicar em Novo Usuário', async ({ page }) => {
+  25  |     await page.click('[data-testid="btn-novo-usuario"]');
+  26  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  27  |     await expect(page.locator('[data-testid="modal-titulo"]')).toHaveText('Novo Membro');
+  28  |   });
+  29  | 
+  30  |   test('deve preencher e salvar novo usuário', async ({ page }) => {
+  31  |     await page.click('[data-testid="btn-novo-usuario"]');
+  32  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  33  | 
+  34  |     // Preencher formulário
+  35  |     await page.fill('[data-testid="input-email-usuario"]', 'novo.usuario@teste.com');
+  36  |     await page.fill('[data-testid="input-nome-usuario"]', 'Usuário Teste E2E');
+  37  |     await page.fill('[data-testid="input-telefone-usuario"]', '11999999999');
+  38  |     await page.fill('[data-testid="input-senha-usuario"]', 'Senha123!');
+  39  |     await page.fill('[data-testid="input-confirmar-senha-usuario"]', 'Senha123!');
+  40  | 
+  41  |     // Salvar
+  42  |     await page.click('[data-testid="btn-salvar-usuario"]');
+  43  |     
+  44  |     // Modal deve fechar
+> 45  |     await expect(page.locator('[data-testid="modal-usuario"]')).not.toBeVisible();
+      |                                                                     ^ Error: expect(locator).not.toBeVisible() failed
+  46  |     await page.waitForTimeout(1000);
+  47  |   });
+  48  | 
+  49  |   test('deve cancelar criação de usuário', async ({ page }) => {
+  50  |     await page.click('[data-testid="btn-novo-usuario"]');
+  51  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  52  | 
+  53  |     await page.click('[data-testid="btn-cancelar-modal"]');
+  54  |     await expect(page.locator('[data-testid="modal-usuario"]')).not.toBeVisible();
+  55  |   });
+  56  | 
+  57  |   test('deve validar campos obrigatórios ao criar usuário', async ({ page }) => {
+  58  |     await page.click('[data-testid="btn-novo-usuario"]');
+  59  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  60  | 
+  61  |     // Tentar salvar sem preencher campos
+  62  |     await page.click('[data-testid="btn-salvar-usuario"]');
+  63  |     
+  64  |     // Modal deve permanecer aberto (validação impediu salvamento)
+  65  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  66  |     
+  67  |     await page.click('[data-testid="btn-cancelar-modal"]');
+  68  |   });
+  69  | 
+  70  |   test('deve validar confirmação de senha', async ({ page }) => {
+  71  |     await page.click('[data-testid="btn-novo-usuario"]');
+  72  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  73  | 
+  74  |     await page.fill('[data-testid="input-email-usuario"]', 'teste.senha@teste.com');
+  75  |     await page.fill('[data-testid="input-nome-usuario"]', 'Teste Senha');
+  76  |     await page.fill('[data-testid="input-senha-usuario"]', 'Senha123!');
+  77  |     await page.fill('[data-testid="input-confirmar-senha-usuario"]', 'SenhaDiferente!');
+  78  | 
+  79  |     await page.click('[data-testid="btn-salvar-usuario"]');
+  80  |     
+  81  |     // Modal deve permanecer aberto (senhas não conferem)
+  82  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  83  |     
+  84  |     await page.click('[data-testid="btn-cancelar-modal"]');
+  85  |   });
+  86  | 
+  87  |   test('deve selecionar perfil de usuário', async ({ page }) => {
+  88  |     await page.click('[data-testid="btn-novo-usuario"]');
+  89  |     await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  90  | 
+  91  |     await page.click('[data-testid="select-perfil-usuario"]');
+  92  |     await page.click('text=Gerente');
+  93  |     
+  94  |     const valorSelecionado = await page.locator('[data-testid="select-perfil-usuario"]').inputValue();
+  95  |     expect(valorSelecionado).toBe('gerente');
+  96  |     
+  97  |     await page.click('[data-testid="btn-cancelar-modal"]');
+  98  |   });
+  99  | 
+  100 |   test('deve buscar usuário por nome', async ({ page }) => {
+  101 |     await page.fill('[data-testid="input-busca-equipe"]', 'admin');
+  102 |     await page.waitForTimeout(500);
+  103 |     
+  104 |     const valorBusca = await page.locator('[data-testid="input-busca-equipe"]').inputValue();
+  105 |     expect(valorBusca).toBe('admin');
+  106 |   });
+  107 | 
+  108 |   test('deve editar usuário existente', async ({ page }) => {
+  109 |     // Verificar se há usuários para editar
+  110 |     const cards = await page.locator('[data-testid^="card-tecnico-"]').count();
+  111 |     
+  112 |     if (cards > 0) {
+  113 |       const primeiroCard = page.locator('[data-testid^="card-tecnico-"]').first();
+  114 |       const cardId = await primeiroCard.getAttribute('data-testid');
+  115 |       const id = cardId?.replace('card-tecnico-', '');
+  116 |       
+  117 |       if (id) {
+  118 |         await page.click(`[data-testid="btn-editar-${id}"]`);
+  119 |         await expect(page.locator('[data-testid="modal-usuario"]')).toBeVisible();
+  120 |         await expect(page.locator('[data-testid="modal-titulo"]')).toHaveText('Editar Membro');
+  121 | 
+  122 |         // Modificar nome
+  123 |         await page.fill('[data-testid="input-nome-usuario"]', 'Usuário Editado E2E');
+  124 |         await page.click('[data-testid="btn-salvar-usuario"]');
+  125 |         
+  126 |         await expect(page.locator('[data-testid="modal-usuario"]')).not.toBeVisible();
+  127 |       }
+  128 |     } else {
+  129 |       test.skip(true, 'Nenhum usuário encontrado para editar');
+  130 |     }
+  131 |   });
+  132 | 
+  133 |   test('deve exibir cards de técnicos com informações', async ({ page }) => {
+  134 |     const cards = await page.locator('[data-testid^="card-tecnico-"]').count();
+  135 |     
+  136 |     if (cards > 0) {
+  137 |       const primeiroCard = page.locator('[data-testid^="card-tecnico-"]').first();
+  138 |       await expect(primeiroCard).toBeVisible();
+  139 |       // Verificar que o card tem conteúdo (nome, email, perfil)
+  140 |     } else {
+  141 |       test.skip(true, 'Nenhum usuário encontrado');
+  142 |     }
+  143 |   });
+  144 | });
+  145 | 
+```
