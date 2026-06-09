@@ -158,3 +158,8 @@ relatorios_gerados/
 coverage/
 *.bak
 *.orig
+
+# Arquivos internos de desenvolvimento / prompts Devin
+PROMPT_*.md
+PROMPT_CONTINUACAO_*.md
+devin_*.md
