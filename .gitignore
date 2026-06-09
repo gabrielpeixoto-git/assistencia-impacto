@@ -163,3 +163,20 @@ coverage/
 PROMPT_*.md
 PROMPT_CONTINUACAO_*.md
 devin_*.md
+
+# ── Scripts e arquivos temporários de desenvolvimento ──
+*.tmp
+create_api.*
+fix_api.*
+query
+start
+
+# ── Backups de banco de dados (podem conter dados sensíveis) ──
+*.sql
+backup_*.sql
+backup_final_*.sql
+
+# ── Scripts de manutenção temporários ──
+*.bat
+*.ps1
+!Makefile
